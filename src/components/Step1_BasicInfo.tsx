@@ -47,20 +47,20 @@ export default function Step1_BasicInfo() {
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold flex items-center">
             <Clock className="w-5 h-5 mr-2 text-gray-500" />
-            차시 정보
+            교시 정보
           </h3>
           <button 
             onClick={handleAddPeriod}
             className="flex items-center text-sm text-primary hover:text-blue-700 font-medium"
           >
             <Plus className="w-4 h-4 mr-1" />
-            차시 추가
+            교시 추가
           </button>
         </div>
 
         <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
           <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-gray-100 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-            <div className="col-span-2">차시</div>
+            <div className="col-span-2">교시</div>
             <div className="col-span-4">시작 시간</div>
             <div className="col-span-4">종료 시간</div>
             <div className="col-span-2 text-right">삭제</div>
@@ -70,7 +70,7 @@ export default function Step1_BasicInfo() {
             {schoolInfo.timeTable.map((period, index) => (
               <div key={index} className="grid grid-cols-12 gap-4 px-6 py-3 items-center hover:bg-white transition-colors">
                 <div className="col-span-2 font-medium text-gray-900">
-                  {period.period} 차시
+                  {period.period} 교시
                 </div>
                 <div className="col-span-4">
                   <input 

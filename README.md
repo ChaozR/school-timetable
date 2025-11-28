@@ -1,30 +1,11 @@
 # School Timetable Generator
 
-A web application to generate semester schedules for school classes.
+창체활동 시간표 생성용 웹 애플리케이션
 
 ## Features
-- Wizard-based setup
-- Weekly pattern management
-- Holiday handling with automatic session postponement
-- Excel and Image export
-
-## How to Run
-
-1. Install dependencies (if not already done):
-   ```bash
-   npm install
-   ```
-
-2. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-3. Open your browser at the URL shown (usually http://localhost:5173).
-
-## Tech Stack
-- React + Vite
-- Tailwind CSS
-- Zustand (State Management)
-- SheetJS (Excel Export)
-- html2canvas (Image Export)
+- 학교 정보 입력
+- 교시 정보 입력
+- 학급 정보 입력
+- 주간 패턴 관리
+- 휴일 처리
+- Excel 및 이미지 내보내기
