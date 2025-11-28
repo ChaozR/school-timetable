@@ -16,7 +16,14 @@ export default function Step2_Classes() {
 
   const handleAddClass = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!grade || !classNum) return;
+    if (!grade) {
+      alert('학년을 입력해주세요.');
+      return;
+    }
+    if (!classNum) {
+      alert('반을 입력해주세요.');
+      return;
+    }
 
     const name = `${grade}-${classNum}`;
     if (classes.some(c => c.name === name)) {
@@ -51,7 +58,6 @@ export default function Step2_Classes() {
               value={grade}
               onChange={(e) => setGrade(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              placeholder="1"
               min="1"
             />
           </div>
@@ -62,7 +68,6 @@ export default function Step2_Classes() {
               value={classNum}
               onChange={(e) => setClassNum(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              placeholder="1"
               min="1"
             />
           </div>

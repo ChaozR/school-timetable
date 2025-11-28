@@ -8,6 +8,7 @@ export interface ScheduleItem {
   startTime: string;
   endTime: string;
   className: string;
+  classId: string;
   classColor: string;
   sessionNumber: number;
 }
@@ -70,6 +71,7 @@ export const generateSchedule = (
               startTime: timeInfo?.start || '',
               endTime: timeInfo?.end || '',
               className: cls.name,
+              classId: cls.id,
               classColor: cls.color,
               sessionNumber: sessionsScheduled
             });

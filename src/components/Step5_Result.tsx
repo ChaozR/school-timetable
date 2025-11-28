@@ -207,8 +207,10 @@ export default function Step5_Result() {
                                 className="px-2 py-1.5 rounded text-xs text-gray-900 shadow-sm text-left"
                                 style={{ backgroundColor: item.classColor }}
                               >
-                                <div className="font-bold">{item.className}</div>
-                                <div className="opacity-90 text-[10px]">{item.sessionNumber}차시</div>
+                                <div className="text-[14px] font-bold">{item.className}</div>
+                                <div className="opacity-90 text-[12px]">
+                                  {item.sessionNumber}/{store.scheduleConfig.classSettings[item.classId]?.totalSessions || '?'}차시
+                                </div>
                               </div>
                             ))}
                           </div>
