@@ -37,14 +37,21 @@ export default function Step3_WeeklyPattern() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold mb-2">주간 시간표</h2>
-        <p className="text-gray-500 mb-6">표를 눌러 수업을 듣는 학급을 할당해주세요.</p>
+        <p className="text-gray-500 mb-6">표를 눌러 각 요일과 교시별로 수업을 듣는 학급을 할당해주세요.</p>
+      </div>
+
+      <div className="mt-4 p-4 bg-blue-50 rounded-lg text-sm text-blue-700">
+        <strong>Tip:</strong> 원활한 강사 매칭을 위해, 한 요일당 최소 2교시 이상의 수업을 할당해주세요.
+      </div>
+      <div className="mt-4 p-4 bg-blue-50 rounded-lg text-sm text-blue-700">
+        <strong>Tip:</strong> 학교별 1명의 강사 파견이 원칙이므로 수강 학급이 너무 많은 등 불가피한 상황이 아니라면 한 교시에 두 학급 이상을 할당하지 말아주세요.
       </div>
 
       <div className="overflow-x-auto">
         <table className="w-full border-collapse border border-gray-200">
           <thead>
             <tr>
-              <th className="p-3 border border-gray-200 bg-gray-50 text-center w-20">수업 시간</th>
+              <th className="p-3 border border-gray-200 bg-gray-50 text-center w-20">교시</th>
               {DAYS.map(day => (
                 <th key={day} className="p-3 border border-gray-200 bg-gray-50 text-center w-40">{day}</th>
               ))}

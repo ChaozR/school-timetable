@@ -6,6 +6,8 @@ import * as XLSX from 'xlsx';
 import html2canvas from 'html2canvas';
 
 
+import toast from 'react-hot-toast';
+
 export default function Step5_Result() {
   const store = useSchedulerStore();
   const scheduleRef = useRef<HTMLDivElement>(null);
@@ -136,14 +138,14 @@ export default function Step5_Result() {
       link.click();
     } catch (error) {
       console.error('Export failed:', error);
-      alert('이미지 저장 중 오류가 발생했습니다.');
+      toast.error('이미지 저장 중 오류가 발생했습니다.');
     }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">생성된 시간표</h2>
+        <h2 className="text-2xl font-bold">시간표</h2>
         <div className="flex gap-3">
           <button 
             onClick={handleExportExcel}
@@ -160,6 +162,11 @@ export default function Step5_Result() {
             이미지로 저장
           </button>
         </div>
+      </div>
+      <div>
+        <p className="font-bold">
+        생성된 시간표를 이미지로 저장하여 보내주세요.
+        </p>
       </div>
 
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col max-h-[80vh]" ref={scheduleRef}>
@@ -224,11 +231,6 @@ export default function Step5_Result() {
           )}
         </div>
 
-      </div>
-      <div>
-        <p className="text-center font-bold">
-        생성된 시간표를 이미지로 저장하여 보내주세요.
-        </p>
       </div>
     </div>
   );

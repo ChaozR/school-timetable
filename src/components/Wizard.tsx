@@ -15,12 +15,25 @@ const STEPS = [
   { id: 5, title: '결과', component: Step5_Result },
 ];
 
+import { useSchedulerStore } from '../store/useSchedulerStore';
+import toast from 'react-hot-toast';
+
 export default function Wizard() {
   const [currentStep, setCurrentStep] = useState(1);
+  const { schoolInfo } = useSchedulerStore();
 
   const CurrentComponent = STEPS.find(s => s.id === currentStep)?.component || Step1_BasicInfo;
 
   const handleNext = () => {
+    if (currentStep === 1) {
+      for (const period of schoolInfo.timeTable) {
+        if (period.start >= period.end) {
+          toast.error(`${period.period}교시의 시작 시간이 종료 시간보다 늦거나 같습니다.\n시간을 확인해주세요.`);
+          return;
+        }
+      }
+    }
+
     if (currentStep < STEPS.length) setCurrentStep(prev => prev + 1);
   };
 

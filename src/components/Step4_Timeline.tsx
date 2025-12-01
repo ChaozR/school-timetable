@@ -142,7 +142,10 @@ export default function Step4_Timeline() {
         </div>
         
         <div className="mt-4 p-4 bg-blue-50 rounded-lg text-sm text-blue-700">
-          <strong>Tip:</strong> 수업 시작일은 각 학급의 가장 첫 번째 수업이 시작되는 일로 설정해주세요.
+          <strong>Tip:</strong> 수업 시작일은 각 학급의 가장 첫 번째 수업이 시작되는 주의 월요일 또는 당일로 설정해주세요.
+        </div>
+        <div className="mt-4 p-4 bg-blue-50 rounded-lg text-sm text-blue-700">
+          <strong>Tip:</strong> 한 개의 학급이 중간에 방학 등을 거쳐 1, 2학기에 나누어 수업을 듣는 경우 학기별로 시간표를 별도 생성해주세요.
         </div>
         <div className="mt-4 p-4 bg-blue-50 rounded-lg text-sm text-blue-700">
           <strong>Tip:</strong> 수업과 휴강일이 겹치는 경우, 수업은 다음 주로 미루어집니다.

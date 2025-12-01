@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSchedulerStore } from '../store/useSchedulerStore';
 import { Plus, X, Users } from 'lucide-react';
-import type { ClassInfo } from '../types';
+import toast from 'react-hot-toast';
 
 const PRESET_COLORS = [
   '#fca5a5', '#fdba74', '#fcd34d', '#86efac', '#6ee7b7',
@@ -14,34 +14,65 @@ export default function Step2_Classes() {
   const [grade, setGrade] = useState('');
   const [classNum, setClassNum] = useState('');
 
+  const createClassObject = (name: string, offset: number = 0) => {
+    const randomColor = PRESET_COLORS[(classes.length + offset) % PRESET_COLORS.length];
+    return {
+      id: crypto.randomUUID(),
+      name,
+      color: randomColor
+    };
+  };
+
   const handleAddClass = (e: React.FormEvent) => {
     e.preventDefault();
     if (!grade) {
-      alert('학년을 입력해주세요.');
+      toast.error('학년을 입력해주세요.');
       return;
     }
     if (!classNum) {
-      alert('반을 입력해주세요.');
+      toast.error('반을 입력해주세요.');
       return;
     }
 
     const name = `${grade}-${classNum}`;
     if (classes.some(c => c.name === name)) {
-      alert('이미 존재하는 반입니다');
+      toast.error('이미 존재하는 반입니다');
       return;
     }
 
-    const randomColor = PRESET_COLORS[classes.length % PRESET_COLORS.length];
-    
-    const newClass: ClassInfo = {
-      id: crypto.randomUUID(),
-      name,
-      color: randomColor
-    };
-
-    addClass(newClass);
+    addClass(createClassObject(name));
     setGrade('');
     setClassNum('');
+  };
+
+  const handleBatchAddClass = () => {
+    if (!grade) {
+      toast.error('학년을 입력해주세요.');
+      return;
+    }
+    if (!classNum) {
+      toast.error('반(마지막 번호)을 입력해주세요.');
+      return;
+    }
+    
+    const maxClassNum = parseInt(classNum);
+    let addedCount = 0;
+
+    for (let i = 1; i <= maxClassNum; i++) {
+      const name = `${grade}-${i}`;
+      if (!classes.some(c => c.name === name)) {
+        addClass(createClassObject(name, addedCount));
+        addedCount++;
+      }
+    }
+
+    if (addedCount > 0) {
+      toast.success(`${addedCount}개 학급이 일괄 추가되었습니다.`);
+      setGrade('');
+      setClassNum('');
+    } else {
+      toast.error('추가할 학급이 없거나 이미 모두 존재합니다.');
+    }
   };
 
   return (
@@ -71,14 +102,27 @@ export default function Step2_Classes() {
               min="1"
             />
           </div>
-          <button 
-            type="submit"
-            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 font-medium flex items-center"
-          >
-            <Plus className="w-5 h-5 mr-1" />
-            추가
-          </button>
+          <div className="flex gap-2">
+            <button 
+              type="submit"
+              className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 font-medium flex items-center"
+            >
+              <Plus className="w-5 h-5 mr-1" />
+              추가
+            </button>
+            <button 
+              type="button"
+              onClick={handleBatchAddClass}
+              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium flex items-center"
+            >
+              <Users className="w-5 h-5 mr-1" />
+              일괄 추가
+            </button>
+          </div>
         </form>
+        <p className="mt-2 text-sm text-gray-500">
+          ※ 일괄 추가 예시: 학년 '1', 반 '5' 입력 후 [일괄 추가] 클릭 시 1-1반부터 1-5반까지 한 번에 등록됩니다.
+        </p>
       </div>
 
       <div>
