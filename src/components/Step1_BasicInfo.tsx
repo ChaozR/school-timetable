@@ -1,5 +1,7 @@
 import { useSchedulerStore } from '../store/useSchedulerStore';
 import { Plus, Trash2, Clock } from 'lucide-react';
+import { addMinutes, format, parse } from 'date-fns';
+import toast from 'react-hot-toast';
 
 export default function Step1_BasicInfo() {
   const { schoolInfo, setSchoolName, setTimeTable } = useSchedulerStore();
@@ -23,6 +25,25 @@ export default function Step1_BasicInfo() {
     const newTable = [...schoolInfo.timeTable];
     newTable[index] = { ...newTable[index], [field]: value };
     setTimeTable(newTable);
+  };
+
+  const handleBatchUpdateTime = () => {
+    try {
+      const newTable = schoolInfo.timeTable.map(period => {
+        // Parse 'HH:mm' string to Date object
+        const startDate = parse(period.start, 'HH:mm', new Date());
+        const endDate = addMinutes(startDate, 40);
+        return {
+          ...period,
+          end: format(endDate, 'HH:mm')
+        };
+      });
+      setTimeTable(newTable);
+      toast.success('모든 교시의 종료 시간이 시작 시간 +40분으로 설정되었습니다.');
+    } catch (error) {
+      console.error(error);
+      toast.error('시간 설정 중 오류가 발생했습니다. 시작 시간을 확인해주세요.');
+    }
   };
 
   return (
@@ -49,13 +70,22 @@ export default function Step1_BasicInfo() {
             <Clock className="w-5 h-5 mr-2 text-gray-500" />
             교시 정보
           </h3>
-          <button 
-            onClick={handleAddPeriod}
-            className="flex items-center text-sm text-primary hover:text-blue-700 font-medium"
-          >
-            <Plus className="w-4 h-4 mr-1" />
-            교시 추가
-          </button>
+          <div className="flex gap-3">
+            <button 
+              onClick={handleBatchUpdateTime}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium flex items-center text-sm"
+            >
+              <Clock className="w-4 h-4 mr-1" />
+              종료 시간 일괄 수정 (+40분)
+            </button>
+            <button 
+              onClick={handleAddPeriod}
+              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 font-medium flex items-center text-sm"
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              교시 추가
+            </button>
+          </div>
         </div>
 
         <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
@@ -101,6 +131,9 @@ export default function Step1_BasicInfo() {
             ))}
           </div>
         </div>
+        <p className="mt-2 text-sm text-gray-500">
+          ※ 종료 시간 일괄 수정: 각 교시의 시작 시간을 기준으로 40분 후를 종료 시간으로 자동 설정합니다.
+        </p>
       </div>
     </div>
   );
