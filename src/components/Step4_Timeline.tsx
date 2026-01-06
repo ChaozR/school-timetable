@@ -4,9 +4,35 @@ import { format, addMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameM
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import clsx from 'clsx';
 
+const KOREAN_HOLIDAYS = [
+  '2026-01-01', // New Year
+  '2026-02-16', '2026-02-17', '2026-02-18', // Lunar New Year
+  '2026-03-01', '2026-03-02', // Samiljeol & Substitution
+  '2026-05-05', // Children's Day
+  '2026-05-24', '2026-05-25', // Buddha's Birthday & Substitution
+  '2026-06-03', // Election Day
+  '2026-06-06', // Memorial Day
+  '2026-08-15', '2026-08-17', // Liberation Day & Substitution
+  '2026-09-24', '2026-09-25', '2026-09-26', // Chuseok
+  '2026-10-03', '2026-10-05', // Foundation Day & Substitution
+  '2026-10-09', // Hangeul Day
+  '2026-12-25' // Christmas
+];
+
 export default function Step4_Timeline() {
   const { classes, scheduleConfig, setHolidays, updateClassSetting } = useSchedulerStore();
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [globalStartDate, setGlobalStartDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+
+  const handleBatchStartDate = () => {
+    classes.forEach(cls => {
+      const currentSetting = scheduleConfig.classSettings[cls.id] || { totalSessions: 12 };
+      updateClassSetting(cls.id, {
+        ...currentSetting,
+        startDate: globalStartDate
+      });
+    });
+  };
 
   // Initialize class settings if empty
   useEffect(() => {
@@ -19,6 +45,13 @@ export default function Step4_Timeline() {
       }
     });
   }, [classes]);
+
+  // Initialize holidays with Korean public holidays if empty
+  useEffect(() => {
+    if (scheduleConfig.holidays.length === 0) {
+      setHolidays(KOREAN_HOLIDAYS);
+    }
+  }, []);
 
   const toggleHoliday = (date: Date) => {
     const dateStr = format(date, 'yyyy-MM-dd');
@@ -84,12 +117,28 @@ export default function Step4_Timeline() {
           </div>
         </div>
         <p className="text-xs text-gray-500 mt-2 text-center">날짜를 클릭하여 휴강일로 설정해주세요 (빨간색)</p>
+        <p className="text-xs text-gray-500 mt-2 text-center">26년 공휴일은 자동 적용되어있습니다</p>
       </div>
 
       {/* Class Settings Section */}
       <div className="lg:col-span-2">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-bold">학급별 수업 일정 설정</h3>
+          <div className="flex items-center space-x-2">
+            <span className="text-sm font-medium text-gray-700">시작일 일괄 적용:</span>
+            <input 
+              type="date"
+              value={globalStartDate}
+              onChange={(e) => setGlobalStartDate(e.target.value)}
+              className="px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-primary focus:border-primary"
+            />
+            <button
+              onClick={handleBatchStartDate}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium flex items-center text-sm"
+            >
+              적용
+            </button>
+          </div>
         </div>
 
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
