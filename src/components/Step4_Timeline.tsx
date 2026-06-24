@@ -12,6 +12,7 @@ const KOREAN_HOLIDAYS = [
   '2026-05-24', '2026-05-25', // Buddha's Birthday & Substitution
   '2026-06-03', // Election Day
   '2026-06-06', // Memorial Day
+  '2026-07-17', // 제헌절
   '2026-08-15', '2026-08-17', // Liberation Day & Substitution
   '2026-09-24', '2026-09-25', '2026-09-26', // Chuseok
   '2026-10-03', '2026-10-05', // Foundation Day & Substitution
@@ -23,6 +24,7 @@ export default function Step4_Timeline() {
   const { classes, scheduleConfig, setHolidays, updateClassSetting } = useSchedulerStore();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [globalStartDate, setGlobalStartDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [globalTotalSessions, setGlobalTotalSessions] = useState<number>(12);
 
   const handleBatchStartDate = () => {
     classes.forEach(cls => {
@@ -30,6 +32,16 @@ export default function Step4_Timeline() {
       updateClassSetting(cls.id, {
         ...currentSetting,
         startDate: globalStartDate
+      });
+    });
+  };
+
+  const handleBatchTotalSessions = () => {
+    classes.forEach(cls => {
+      const currentSetting = scheduleConfig.classSettings[cls.id] || { startDate: format(new Date(), 'yyyy-MM-dd') };
+      updateClassSetting(cls.id, {
+        ...currentSetting,
+        totalSessions: globalTotalSessions
       });
     });
   };
@@ -122,22 +134,43 @@ export default function Step4_Timeline() {
 
       {/* Class Settings Section */}
       <div className="lg:col-span-2">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
           <h3 className="text-lg font-bold">학급별 수업 일정 설정</h3>
-          <div className="flex items-center space-x-2">
-            <span className="text-sm font-medium text-gray-700">시작일 일괄 적용:</span>
-            <input 
-              type="date"
-              value={globalStartDate}
-              onChange={(e) => setGlobalStartDate(e.target.value)}
-              className="px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-primary focus:border-primary"
-            />
-            <button
-              onClick={handleBatchStartDate}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium flex items-center text-sm"
-            >
-              적용
-            </button>
+          <div className="flex flex-wrap items-center gap-3">
+            {/* 시작일 일괄 적용 */}
+            <div className="flex items-center space-x-2 bg-gray-50 p-1.5 rounded-lg border border-gray-200">
+              <span className="text-xs font-semibold text-gray-600 pl-1">시작일 일괄:</span>
+              <input 
+                type="date"
+                value={globalStartDate}
+                onChange={(e) => setGlobalStartDate(e.target.value)}
+                className="px-2 py-1 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-green-500 focus:border-green-500"
+              />
+              <button
+                onClick={handleBatchStartDate}
+                className="px-2.5 py-1 bg-green-600 text-white rounded hover:bg-green-700 font-medium text-xs transition-colors"
+              >
+                적용
+              </button>
+            </div>
+            
+            {/* 총 수업 시수 일괄 적용 */}
+            <div className="flex items-center space-x-2 bg-gray-50 p-1.5 rounded-lg border border-gray-200">
+              <span className="text-xs font-semibold text-gray-600 pl-1">시수 일괄:</span>
+              <input 
+                type="number"
+                value={globalTotalSessions}
+                onChange={(e) => setGlobalTotalSessions(parseInt(e.target.value) || 0)}
+                className="w-16 px-2 py-1 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-green-500 focus:border-green-500"
+                min="1"
+              />
+              <button
+                onClick={handleBatchTotalSessions}
+                className="px-2.5 py-1 bg-green-600 text-white rounded hover:bg-green-700 font-medium text-xs transition-colors"
+              >
+                적용
+              </button>
+            </div>
           </div>
         </div>
 

@@ -46,6 +46,9 @@ export default function Step3_WeeklyPattern() {
       <div className="mt-4 p-4 bg-blue-50 rounded-lg text-sm text-blue-700">
         <strong>Tip:</strong> 학교별 1명의 강사 파견이 원칙이므로 수강 학급이 너무 많은 등 불가피한 상황이 아니라면 한 교시에 두 학급 이상을 할당하지 말아주세요.
       </div>
+      <div className="mt-4 p-4 bg-blue-50 rounded-lg text-sm text-blue-700">
+        <strong>Tip:</strong> 여러 학급이 같이 수업을 듣는 경우 하나의 대표 학급만 할당해주세요.
+      </div>
 
       <div className="overflow-x-auto">
         <table className="w-full border-collapse border border-gray-200">
