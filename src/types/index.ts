@@ -16,7 +16,7 @@ export interface ClassInfo {
 }
 
 export interface WeeklyPattern {
-  [day: string]: { // "Mon", "Tue", ...
+  [day: string]: { // "월", "화", "수", "목", "금"
     [period: number]: string[]; // Array of class IDs
   };
 }
@@ -42,9 +42,16 @@ export interface SchedulerStore {
   // Actions
   setSchoolName: (name: string) => void;
   setTimeTable: (periods: TimePeriod[]) => void;
+  removePeriod: (index: number) => void;
   addClass: (cls: ClassInfo) => void;
   removeClass: (id: string) => void;
   updateWeeklyPattern: (day: string, period: number, classIds: string[]) => void;
+  moveOrCopyClassInPattern: (
+    classId: string,
+    from: { day: string; period: number },
+    to: { day: string; period: number },
+    mode: 'move' | 'copy'
+  ) => void;
   setHolidays: (holidays: string[]) => void;
   updateClassSetting: (classId: string, setting: ClassSetting) => void;
 }

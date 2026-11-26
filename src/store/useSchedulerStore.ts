@@ -1,5 +1,7 @@
 import { create } from 'zustand';
-import type { SchedulerStore, TimePeriod, ClassInfo, ClassSetting } from '../types';
+import { format } from 'date-fns';
+import type { SchedulerStore, TimePeriod, ClassInfo, ClassSetting, WeeklyPattern } from '../types';
+import { DEFAULT_KOREAN_HOLIDAYS } from '../constants/holidays';
 
 const DEFAULT_PERIODS: TimePeriod[] = [
   { period: 1, start: '09:00', end: '09:40' },
@@ -20,7 +22,7 @@ export const useSchedulerStore = create<SchedulerStore>((set) => ({
     '월': {}, '화': {}, '수': {}, '목': {}, '금': {},
   },
   scheduleConfig: {
-    holidays: [],
+    holidays: [...DEFAULT_KOREAN_HOLIDAYS],
     classSettings: {},
   },
 
@@ -32,13 +34,71 @@ export const useSchedulerStore = create<SchedulerStore>((set) => ({
     schoolInfo: { ...state.schoolInfo, timeTable: periods }
   })),
 
+  removePeriod: (index: number) => set((state) => {
+    const removedPeriod = index + 1;
+    const newTable = state.schoolInfo.timeTable
+      .filter((_, i) => i !== index)
+      .map((p, i) => ({ ...p, period: i + 1 }));
+
+    const nextWeeklyPattern: WeeklyPattern = {};
+    for (const [day, daySchedule] of Object.entries(state.weeklyPattern)) {
+      const nextDaySchedule: { [period: number]: string[] } = {};
+      for (const [pStr, classIds] of Object.entries(daySchedule)) {
+        const p = Number(pStr);
+        if (p < removedPeriod) {
+          nextDaySchedule[p] = classIds;
+        } else if (p > removedPeriod) {
+          nextDaySchedule[p - 1] = classIds;
+        }
+      }
+      nextWeeklyPattern[day] = nextDaySchedule;
+    }
+
+    return {
+      schoolInfo: { ...state.schoolInfo, timeTable: newTable },
+      weeklyPattern: nextWeeklyPattern,
+    };
+  }),
+
   addClass: (cls: ClassInfo) => set((state) => ({
-    classes: [...state.classes, cls]
+    classes: [...state.classes, cls],
+    scheduleConfig: {
+      ...state.scheduleConfig,
+      classSettings: {
+        ...state.scheduleConfig.classSettings,
+        [cls.id]: state.scheduleConfig.classSettings[cls.id] ?? {
+          startDate: format(new Date(), 'yyyy-MM-dd'),
+          totalSessions: 12,
+        },
+      },
+    },
   })),
 
-  removeClass: (id: string) => set((state) => ({
-    classes: state.classes.filter((c) => c.id !== id),
-  })),
+  removeClass: (id: string) => set((state) => {
+    const nextWeeklyPattern: WeeklyPattern = {};
+    for (const [day, daySchedule] of Object.entries(state.weeklyPattern)) {
+      const nextDaySchedule: { [period: number]: string[] } = {};
+      for (const [pStr, classIds] of Object.entries(daySchedule)) {
+        const filtered = classIds.filter((cId) => cId !== id);
+        if (filtered.length > 0) {
+          nextDaySchedule[Number(pStr)] = filtered;
+        }
+      }
+      nextWeeklyPattern[day] = nextDaySchedule;
+    }
+
+    const nextClassSettings = { ...state.scheduleConfig.classSettings };
+    delete nextClassSettings[id];
+
+    return {
+      classes: state.classes.filter((c) => c.id !== id),
+      weeklyPattern: nextWeeklyPattern,
+      scheduleConfig: {
+        ...state.scheduleConfig,
+        classSettings: nextClassSettings,
+      },
+    };
+  }),
 
   updateWeeklyPattern: (day: string, period: number, classIds: string[]) => set((state) => ({
     weeklyPattern: {
@@ -49,6 +109,36 @@ export const useSchedulerStore = create<SchedulerStore>((set) => ({
       }
     }
   })),
+
+  moveOrCopyClassInPattern: (classId, from, to, mode) => set((state) => {
+    if (from.day === to.day && from.period === to.period) {
+      return state;
+    }
+
+    const existingTarget = state.weeklyPattern[to.day]?.[to.period] || [];
+    if (existingTarget.includes(classId)) {
+      return state;
+    }
+
+    const nextPattern: WeeklyPattern = { ...state.weeklyPattern };
+
+    if (mode === 'move') {
+      const sourceDay = { ...(nextPattern[from.day] || {}) };
+      const filtered = (sourceDay[from.period] || []).filter((id) => id !== classId);
+      if (filtered.length > 0) {
+        sourceDay[from.period] = filtered;
+      } else {
+        delete sourceDay[from.period];
+      }
+      nextPattern[from.day] = sourceDay;
+    }
+
+    const targetDay = { ...(nextPattern[to.day] || {}) };
+    targetDay[to.period] = [...(targetDay[to.period] || []), classId];
+    nextPattern[to.day] = targetDay;
+
+    return { weeklyPattern: nextPattern };
+  }),
 
   setHolidays: (holidays: string[]) => set((state) => ({
     scheduleConfig: { ...state.scheduleConfig, holidays }

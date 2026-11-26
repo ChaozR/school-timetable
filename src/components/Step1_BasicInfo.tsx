@@ -4,7 +4,7 @@ import { addMinutes, format, parse } from 'date-fns';
 import toast from 'react-hot-toast';
 
 export default function Step1_BasicInfo() {
-  const { schoolInfo, setSchoolName, setTimeTable } = useSchedulerStore();
+  const { schoolInfo, setSchoolName, setTimeTable, removePeriod } = useSchedulerStore();
 
   const handleAddPeriod = () => {
     const nextPeriod = schoolInfo.timeTable.length + 1;
@@ -15,10 +15,7 @@ export default function Step1_BasicInfo() {
   };
 
   const handleRemovePeriod = (index: number) => {
-    const newTable = schoolInfo.timeTable.filter((_, i) => i !== index);
-    // Renumber periods
-    const renumbered = newTable.map((p, i) => ({ ...p, period: i + 1 }));
-    setTimeTable(renumbered);
+    removePeriod(index);
   };
 
   const handleTimeChange = (index: number, field: 'start' | 'end', value: string) => {
@@ -49,89 +46,110 @@ export default function Step1_BasicInfo() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold mb-2">학교 정보</h2>
-        <p className="text-gray-500 mb-6">학교 이름과 차시 정보를 학교에 맞게 수정해주세요.</p>
-        
+        <h2 className="text-2xl font-bold text-slate-900 tracking-tight [text-wrap:balance] mb-2">학교 정보</h2>
+        <p className="text-slate-500 mb-6">학교 이름과 차시 정보를 학교에 맞게 수정해주세요.</p>
+
         <div className="max-w-md">
-          <label className="block text-sm font-medium text-gray-700 mb-1">학교 이름</label>
-          <input 
-            type="text" 
+          <label htmlFor="school-name" className="block text-sm font-medium text-slate-700 mb-1.5">학교 이름</label>
+          <input
+            id="school-name"
+            type="text"
             value={schoolInfo.name}
             onChange={(e) => setSchoolName(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow"
+            className="input-base w-full"
             placeholder="학교 이름을 입력해주세요"
           />
         </div>
       </div>
 
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold flex items-center">
-            <Clock className="w-5 h-5 mr-2 text-gray-500" />
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <h3 className="text-lg font-semibold text-slate-900 flex items-center">
+            <Clock className="w-5 h-5 mr-2 text-slate-500" aria-hidden="true" />
             교시 정보
           </h3>
-          <div className="flex gap-3">
-            <button 
+          <div className="flex flex-wrap gap-2.5">
+            <button
+              type="button"
               onClick={handleBatchUpdateTime}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium flex items-center text-sm"
+              className="btn-secondary"
             >
-              <Clock className="w-4 h-4 mr-1" />
+              <Clock className="w-4 h-4" aria-hidden="true" />
               종료 시간 일괄 수정 (+40분)
             </button>
-            <button 
+            <button
+              type="button"
               onClick={handleAddPeriod}
-              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 font-medium flex items-center text-sm"
+              className="btn-primary"
             >
-              <Plus className="w-4 h-4 mr-1" />
+              <Plus className="w-4 h-4" aria-hidden="true" />
               교시 추가
             </button>
           </div>
         </div>
 
-        <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
-          <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-gray-100 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+          <div className="hidden sm:grid sm:grid-cols-12 gap-4 px-5 py-3 bg-slate-100/80 border-b border-slate-200 text-xs font-semibold text-slate-600">
             <div className="col-span-2">교시</div>
             <div className="col-span-4">시작 시간</div>
             <div className="col-span-4">종료 시간</div>
             <div className="col-span-2 text-right">삭제</div>
           </div>
-          
-          <div className="divide-y divide-gray-200">
+
+          <div className="divide-y divide-slate-200">
             {schoolInfo.timeTable.map((period, index) => (
-              <div key={index} className="grid grid-cols-12 gap-4 px-6 py-3 items-center hover:bg-white transition-colors">
-                <div className="col-span-2 font-medium text-gray-900">
-                  {period.period} 교시
-                </div>
-                <div className="col-span-4">
-                  <input 
-                    type="time" 
-                    value={period.start}
-                    onChange={(e) => handleTimeChange(index, 'start', e.target.value)}
-                    className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary text-sm"
-                  />
-                </div>
-                <div className="col-span-4">
-                  <input 
-                    type="time" 
-                    value={period.end}
-                    onChange={(e) => handleTimeChange(index, 'end', e.target.value)}
-                    className="w-full px-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary text-sm"
-                  />
-                </div>
-                <div className="col-span-2 text-right">
-                  <button 
+              <div
+                key={index}
+                className="grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-4 px-4 sm:px-5 py-3.5 items-center hover:bg-slate-50/70 transition-colors"
+              >
+                <div className="flex items-center justify-between sm:col-span-2 font-semibold text-slate-900 tabular-nums">
+                  <span>{period.period}교시</span>
+                  <button
+                    type="button"
                     onClick={() => handleRemovePeriod(index)}
-                    className="text-gray-400 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-red-50"
-                    title="Remove period"
+                    className="sm:hidden text-slate-400 hover:text-red-600 hover:bg-red-50 active:scale-95 transition-all p-1.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                    aria-label={`${period.period}교시 삭제`}
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4" aria-hidden="true" />
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 gap-3 sm:contents">
+                  <div className="sm:col-span-4">
+                    <span className="block sm:hidden text-xs font-medium text-slate-500 mb-1">시작 시간</span>
+                    <input
+                      type="time"
+                      value={period.start}
+                      onChange={(e) => handleTimeChange(index, 'start', e.target.value)}
+                      aria-label={`${period.period}교시 시작 시간`}
+                      className="input-base w-full py-1.5 tabular-nums"
+                    />
+                  </div>
+                  <div className="sm:col-span-4">
+                    <span className="block sm:hidden text-xs font-medium text-slate-500 mb-1">종료 시간</span>
+                    <input
+                      type="time"
+                      value={period.end}
+                      onChange={(e) => handleTimeChange(index, 'end', e.target.value)}
+                      aria-label={`${period.period}교시 종료 시간`}
+                      className="input-base w-full py-1.5 tabular-nums"
+                    />
+                  </div>
+                </div>
+                <div className="hidden sm:flex sm:col-span-2 sm:justify-end">
+                  <button
+                    type="button"
+                    onClick={() => handleRemovePeriod(index)}
+                    className="text-slate-400 hover:text-red-600 hover:bg-red-50 active:scale-95 transition-all p-1.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                    aria-label={`${period.period}교시 삭제`}
+                  >
+                    <Trash2 className="w-4 h-4" aria-hidden="true" />
                   </button>
                 </div>
               </div>
             ))}
           </div>
         </div>
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-2.5 text-sm text-slate-500">
           ※ 종료 시간 일괄 수정: 각 교시의 시작 시간을 기준으로 40분 후를 종료 시간으로 자동 설정합니다.
         </p>
       </div>

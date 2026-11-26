@@ -55,7 +55,7 @@ export const generateSchedule = (
       if (dayPattern) {
         // Get all periods for this day that have this class
         const periodsForClass = Object.entries(dayPattern)
-          .filter(([_, classIds]) => classIds.includes(cls.id))
+          .filter(([, classIds]) => classIds.includes(cls.id))
           .map(([p]) => parseInt(p))
           .sort((a, b) => a - b);
 

@@ -6,10 +6,30 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: [
+          '"Pretendard Variable"',
+          'Pretendard',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'system-ui',
+          'Roboto',
+          '"Helvetica Neue"',
+          '"Segoe UI"',
+          '"Apple SD Gothic Neo"',
+          '"Noto Sans KR"',
+          '"Malgun Gothic"',
+          'sans-serif',
+        ],
+      },
       colors: {
-        primary: '#3b82f6',
-        secondary: '#64748b',
-      }
+        primary: {
+          DEFAULT: '#2f5bd3',
+          hover: '#254ab3',
+          soft: '#eef3fc',
+        },
+        secondary: '#475569',
+      },
     },
   },
   plugins: [],
